@@ -29,7 +29,7 @@ public abstract class BiomeEffectSoundPlayerMixin {
     }
 
     @Redirect(
-            method = "tick",
+            method = "method_26271",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/network/ClientPlayerEntity;getX()D",
@@ -46,7 +46,7 @@ public abstract class BiomeEffectSoundPlayerMixin {
     }
 
     @Redirect(
-            method = "tick",
+            method = "method_26271",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/network/ClientPlayerEntity;getZ()D",

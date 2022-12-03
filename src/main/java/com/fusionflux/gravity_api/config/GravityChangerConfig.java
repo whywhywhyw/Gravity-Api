@@ -1,13 +1,48 @@
 package com.fusionflux.gravity_api.config;
 
+import me.shedaniel.autoconfig.ConfigData;
+import me.shedaniel.autoconfig.annotation.Config;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
-public class GravityChangerConfig extends MidnightConfig {
+@Config(
+        name ="gravity_api"
+)
+public class GravityChangerConfig implements ConfigData {
+    @ConfigEntry.Gui.PrefixText
+    @ConfigEntry.Gui.Excluded
+    private boolean client;
 
-    @Entry public static boolean keepWorldLook = false;
-    @Entry public static int rotationTime = 500;
-    @Entry public static boolean server;
-    @Entry public static boolean worldVelocity = false;
-    @Entry public static boolean resetGravityOnDimensionChange = true;
-    @Entry public static boolean resetGravityOnRespawn = true;
-    @Entry public static boolean voidDamageAboveWorld = false;
+    @ConfigEntry.Gui.Tooltip(
+            count = 2
+    )
+    public boolean keepWorldLook = false;
+
+    @ConfigEntry.Gui.Tooltip(
+            count = 2
+    )
+    public int rotationTime = 500;
+
+    @ConfigEntry.Gui.PrefixText
+    @ConfigEntry.Gui.Excluded
+    private boolean server;
+
+    @ConfigEntry.Gui.Tooltip(
+            count = 2
+    )
+    public boolean worldVelocity = false;
+
+    @ConfigEntry.Gui.Tooltip(
+            count = 2
+    )
+    public boolean resetGravityOnDimensionChange = true;
+
+    @ConfigEntry.Gui.Tooltip(
+            count = 2
+    )
+    public boolean resetGravityOnRespawn = true;
+
+    @ConfigEntry.Gui.Tooltip(
+            count = 2
+    )
+    public boolean voidDamageAboveWorld = false;
 }

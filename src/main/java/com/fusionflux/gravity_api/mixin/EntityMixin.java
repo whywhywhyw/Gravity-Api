@@ -13,11 +13,10 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.*;
-import net.minecraft.util.random.RandomGenerator;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,7 +27,6 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 
 import java.util.List;
-import java.util.Random;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin{
@@ -84,6 +82,10 @@ public abstract class EntityMixin{
     public abstract Box getBoundingBox();
 
     @Shadow
+    public static Vec3d adjustMovementForCollisions(Vec3d movement, Box entityBoundingBox, List<VoxelShape> collisions) {
+        return null;
+    }
+    @Shadow
     public abstract Vec3d getPos();
 
 
@@ -108,12 +110,7 @@ public abstract class EntityMixin{
     @Shadow
     public abstract float getPitch();
 
-    @Shadow
-    protected static Vec3d collideWithShapes(Vec3d movement, Box entityBoundingBox, List<VoxelShape> shapes) {
-        return null;
-    }
-
-    @Shadow @Final protected RandomGenerator random;
+    @Shadow @Final protected Random random;
 
     @Inject(
             method = "calculateBoundingBox",
@@ -204,7 +201,7 @@ public abstract class EntityMixin{
     }
 
     @Inject(
-            method = "getLightLevelDependentValue",
+            method = "getBrightnessAtEyes",
             at = @At("HEAD"),
             cancellable = true
     )
@@ -285,7 +282,7 @@ public abstract class EntityMixin{
     }
 
     @Inject(
-            method = "getLandingPosition",
+            method = "getLandingPos",
             at = @At("HEAD"),
             cancellable = true
     )
@@ -370,7 +367,7 @@ public abstract class EntityMixin{
     }
 
     @ModifyVariable(
-            method = "adjustSingleAxisMovementForCollisions(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Lnet/minecraft/world/World;Ljava/util/List;)Lnet/minecraft/util/math/Vec3d;",
+            method = "adjustMovementForCollisions(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Lnet/minecraft/world/World;Ljava/util/List;)Lnet/minecraft/util/math/Vec3d;",
             at = @At("HEAD"),
             ordinal = 0
     )
@@ -388,7 +385,7 @@ public abstract class EntityMixin{
     }
 
     @Inject(
-            method = "adjustSingleAxisMovementForCollisions(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Lnet/minecraft/world/World;Ljava/util/List;)Lnet/minecraft/util/math/Vec3d;",
+            method = "adjustMovementForCollisions(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Lnet/minecraft/world/World;Ljava/util/List;)Lnet/minecraft/util/math/Vec3d;",
             at = @At("RETURN"),
             cancellable = true
     )
@@ -402,17 +399,17 @@ public abstract class EntityMixin{
     }
 
     @Redirect(
-            method = "adjustSingleAxisMovementForCollisions(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Lnet/minecraft/world/World;Ljava/util/List;)Lnet/minecraft/util/math/Vec3d;",
+            method = "adjustMovementForCollisions(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Lnet/minecraft/world/World;Ljava/util/List;)Lnet/minecraft/util/math/Vec3d;",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/Entity;collideWithShapes(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Ljava/util/List;)Lnet/minecraft/util/math/Vec3d;",
+                    target = "Lnet/minecraft/entity/Entity;adjustMovementForCollisions(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Ljava/util/List;)Lnet/minecraft/util/math/Vec3d;",
                     ordinal = 0
             )
     )
     private static Vec3d redirect_adjustMovementForCollisions_adjustMovementForCollisions_0(Vec3d movement, Box entityBoundingBox, List<VoxelShape> collisions, Entity entity) {
         Direction gravityDirection;
         if(entity == null || (gravityDirection = GravityChangerAPI.getGravityDirection(entity)) == Direction.DOWN) {
-            return collideWithShapes(movement, entityBoundingBox, collisions);
+            return adjustMovementForCollisions(movement, entityBoundingBox, collisions);
         }
 
         Vec3d playerMovement = RotationUtil.vecWorldToPlayer(movement, gravityDirection);

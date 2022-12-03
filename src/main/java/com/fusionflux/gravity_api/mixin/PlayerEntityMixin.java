@@ -25,8 +25,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Shadow protected abstract boolean clipAtLedge();
 
-
-    @Shadow protected abstract boolean isAboveGround();
+    @Shadow protected abstract boolean method_30263();
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -129,7 +128,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
         Vec3d playerMovement = RotationUtil.vecWorldToPlayer(movement, gravityDirection);
 
-        if (!this.abilities.flying && (type == MovementType.SELF || type == MovementType.PLAYER) && this.clipAtLedge() && this.isAboveGround()) {
+        if (!this.abilities.flying && (type == MovementType.SELF || type == MovementType.PLAYER) && this.clipAtLedge() && this.method_30263()) {
             double d = playerMovement.x;
             double e = playerMovement.z;
             double var7 = 0.05D;
@@ -179,7 +178,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     }
 
     @Redirect(
-            method = "isAboveGround",
+            method = "method_30263",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/util/math/Box;offset(DDD)Lnet/minecraft/util/math/Box;",
