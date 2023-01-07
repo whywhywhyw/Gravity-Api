@@ -72,34 +72,34 @@ public abstract class RotationUtil {
         return vecPlayerToWorld(vec3d.x, vec3d.y, vec3d.z, gravityDirection);
     }
 
-    public static Vec3f vecWorldToPlayer(float x, float y, float z, Direction gravityDirection) {
+    public static Vector3f vecWorldToPlayer(float x, float y, float z, Direction gravityDirection) {
         return switch(gravityDirection) {
-            case DOWN  -> new Vec3f( x,  y,  z);
-            case UP    -> new Vec3f(-x, -y,  z);
-            case NORTH -> new Vec3f( x,  z, -y);
-            case SOUTH -> new Vec3f(-x, -z, -y);
-            case WEST  -> new Vec3f(-z,  x, -y);
-            case EAST  -> new Vec3f( z, -x, -y);
+            case DOWN  -> new Vector3f( x,  y,  z);
+            case UP    -> new Vector3f(-x, -y,  z);
+            case NORTH -> new Vector3f( x,  z, -y);
+            case SOUTH -> new Vector3f(-x, -z, -y);
+            case WEST  -> new Vector3f(-z,  x, -y);
+            case EAST  -> new Vector3f( z, -x, -y);
         };
     }
 
-    public static Vec3f vecWorldToPlayer(Vec3f vec3f, Direction gravityDirection) {
-        return vecWorldToPlayer(vec3f.getX(), vec3f.getY(), vec3f.getZ(), gravityDirection);
+    public static Vector3f vecWorldToPlayer(Vector3f vector3F, Direction gravityDirection) {
+        return vecWorldToPlayer(vector3F.x(), vector3F.y(), vector3F.z(), gravityDirection);
     }
 
-    public static Vec3f vecPlayerToWorld(float x, float y, float z, Direction gravityDirection) {
+    public static Vector3f vecPlayerToWorld(float x, float y, float z, Direction gravityDirection) {
         return switch(gravityDirection) {
-            case DOWN  -> new Vec3f( x,  y,  z);
-            case UP    -> new Vec3f(-x, -y,  z);
-            case NORTH -> new Vec3f( x, -z,  y);
-            case SOUTH -> new Vec3f(-x, -z, -y);
-            case WEST  -> new Vec3f( y, -z, -x);
-            case EAST  -> new Vec3f(-y, -z,  x);
+            case DOWN  -> new Vector3f( x,  y,  z);
+            case UP    -> new Vector3f(-x, -y,  z);
+            case NORTH -> new Vector3f( x, -z,  y);
+            case SOUTH -> new Vector3f(-x, -z, -y);
+            case WEST  -> new Vector3f( y, -z, -x);
+            case EAST  -> new Vector3f(-y, -z,  x);
         };
     }
 
-    public static Vec3f vecPlayerToWorld(Vec3f vec3f, Direction gravityDirection) {
-        return vecPlayerToWorld(vec3f.getX(), vec3f.getY(), vec3f.getZ(), gravityDirection);
+    public static Vector3f vecPlayerToWorld(Vector3f vector3F, Direction gravityDirection) {
+        return vecPlayerToWorld(vector3F.x(), vector3F.y(), vector3F.z(), gravityDirection);
     }
 
     public static Vec3d maskWorldToPlayer(double x, double y, double z, Direction gravityDirection) {
@@ -184,120 +184,50 @@ public abstract class RotationUtil {
         return vecToRot(vec3d.x, vec3d.y, vec3d.z);
     }
 
-    private static final Quaternion[] WORLD_ROTATION_QUATERNIONS = new Quaternion[6];
+    private static final Quaternionf[] WORLD_ROTATION_QUATERNIONS = new Quaternionf[6];
     static {
-        WORLD_ROTATION_QUATERNIONS[0] = Quaternion.IDENTITY.copy();
+        WORLD_ROTATION_QUATERNIONS[0] = new Quaternionf();
 
-        WORLD_ROTATION_QUATERNIONS[1] = Vec3f.POSITIVE_Z.getDegreesQuaternion(-180);
+        WORLD_ROTATION_QUATERNIONS[1] = RotationAxis.POSITIVE_Z.rotationDegrees(-180);
 
-        WORLD_ROTATION_QUATERNIONS[2] = Vec3f.POSITIVE_X.getDegreesQuaternion(-90);
+        WORLD_ROTATION_QUATERNIONS[2] = RotationAxis.POSITIVE_X.rotationDegrees(-90);
 
-        WORLD_ROTATION_QUATERNIONS[3] = Vec3f.POSITIVE_X.getDegreesQuaternion(-90);
-        WORLD_ROTATION_QUATERNIONS[3].hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(-180));
+        WORLD_ROTATION_QUATERNIONS[3] = RotationAxis.POSITIVE_X.rotationDegrees(-90);
+        WORLD_ROTATION_QUATERNIONS[3].mul(RotationAxis.POSITIVE_Y.rotationDegrees(-180));
 
-        WORLD_ROTATION_QUATERNIONS[4] = Vec3f.POSITIVE_X.getDegreesQuaternion(-90);
-        WORLD_ROTATION_QUATERNIONS[4].hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90));
+        WORLD_ROTATION_QUATERNIONS[4] = RotationAxis.POSITIVE_X.rotationDegrees(-90);
+        WORLD_ROTATION_QUATERNIONS[4].mul(RotationAxis.POSITIVE_Y.rotationDegrees(-90));
 
-        WORLD_ROTATION_QUATERNIONS[5] = Vec3f.POSITIVE_X.getDegreesQuaternion(-90);
-        WORLD_ROTATION_QUATERNIONS[5].hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(-270));
+        WORLD_ROTATION_QUATERNIONS[5] = RotationAxis.POSITIVE_X.rotationDegrees(-90);
+        WORLD_ROTATION_QUATERNIONS[5].mul(RotationAxis.POSITIVE_Y.rotationDegrees(-270));
     }
 
-    public static Quaternion getWorldRotationQuaternion(Direction gravityDirection) {
+    public static Quaternionf getWorldRotationQuaternion(Direction gravityDirection) {
         return WORLD_ROTATION_QUATERNIONS[gravityDirection.getId()];
     }
 
-    private static final Quaternion[] ENTITY_ROTATION_QUATERNIONS = new Quaternion[6];
+    private static final Quaternionf[] ENTITY_ROTATION_QUATERNIONS = new Quaternionf[6];
     static {
-        ENTITY_ROTATION_QUATERNIONS[0] = Quaternion.IDENTITY;
-
-        ENTITY_ROTATION_QUATERNIONS[1] = Vec3f.POSITIVE_Z.getDegreesQuaternion(-180);
-
-        ENTITY_ROTATION_QUATERNIONS[2] = Vec3f.POSITIVE_X.getDegreesQuaternion(90);
-
-        ENTITY_ROTATION_QUATERNIONS[3] = Vec3f.POSITIVE_X.getDegreesQuaternion(-90);
-        ENTITY_ROTATION_QUATERNIONS[3].hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(-180));
-
-        ENTITY_ROTATION_QUATERNIONS[4] = Vec3f.POSITIVE_Y.getDegreesQuaternion(90);
-        ENTITY_ROTATION_QUATERNIONS[4].hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(90));
-
-        ENTITY_ROTATION_QUATERNIONS[5] = Vec3f.POSITIVE_X.getDegreesQuaternion(90);
-        ENTITY_ROTATION_QUATERNIONS[5].hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(90));
+        for (int i = 0; i < 6; i++) {
+            ENTITY_ROTATION_QUATERNIONS[i] = new Quaternionf().set(WORLD_ROTATION_QUATERNIONS[i]).conjugate();
+        }
     }
 
-    public static Quaternion getCameraRotationQuaternion(Direction gravityDirection) {
+    public static Quaternionf getCameraRotationQuaternion(Direction gravityDirection) {
         return ENTITY_ROTATION_QUATERNIONS[gravityDirection.getId()];
     }
     
-    public static Quaternion rotationByRadians(
-            Vec3f axis,
-            double rotationAngle
-    ) {
-        double s = Math.sin(rotationAngle / 2.0F);
-        return new Quaternion(
-                axis.getX() * (float)s,
-                axis.getY() * (float)s,
-                axis.getZ() * (float)s,
-                (float)Math.cos(rotationAngle / 2.0F)
-        );
+    public static Quaternionf getRotationBetween(Direction d1, Direction d2){
+        Vec3d start = new Vec3d(d1.getUnitVector());
+        Vec3d end = new Vec3d(d2.getUnitVector());
+        if(d1.getOpposite() == d2){
+            return new Quaternionf().fromAxisAngleDeg(new Vector3f(0, 0, -1), 180.0f);
+        }else{
+            return QuaternionUtil.getRotationBetween(start, end);
+        }
     }
     
-    public static Quaternion multiply(Quaternion quat ,float val) {
-        return new Quaternion(
-                quat.getX() * val, quat.getY() * val, quat.getZ() * val, quat.getW() * val
-        );
+    public static Quaternionf interpolate(Quaternionf startGravityRotation, Quaternionf endGravityRotation, float progress) {
+        return new Quaternionf().set(startGravityRotation).slerp(endGravityRotation, progress);
     }
-
-    public static Quaternion add(Quaternion a , Quaternion q) {
-        return new Quaternion(
-                a.getX() + q.getX(), a.getY() + q.getY(), a.getZ() + q.getZ(), a.getW() + q.getW()
-        );
-    }
-
-    public static float dotProduct(Quaternion a,Quaternion q) {
-        return a.getX() * q.getX() +
-                a.getY() * q.getY() +
-                a.getZ() * q.getZ() +
-                a.getW() * q.getW();
-    }
-
-    public static Quaternion getNormalized(Quaternion a) {
-        float lenSq = dotProduct(a,a);
-        if (lenSq != 0) {
-            // no fastInverseSqrt. precision is the most important
-            double len = Math.sqrt(lenSq);
-            return multiply(a,1.0F / (float)len);
-        }
-        else {
-            return new Quaternion(0, 0, 0, 0);
-        }
-    }
-
-    public static Quaternion interpolate(Quaternion a, Quaternion b, float t) {
-
-        float dot = dotProduct(a,b);
-
-        if (dot < 0.0f) {
-            a = multiply(a,-1f);
-
-            dot = -dot;
-        }
-
-        float DOT_THRESHOLD = 0.9995F;
-        if (dot > DOT_THRESHOLD) {
-            // If the inputs are too close for comfort, linearly interpolate
-            // and normalize the result.
-            //add(multiply(a,1 - t),multiply(b,t));
-            return getNormalized(add(multiply(a,1 - t),multiply(b,t)));
-        }
-
-        float theta_0 = (float)Math.acos(dot);
-        float theta = theta_0 * t;
-        float sin_theta = (float)Math.sin(theta);
-        float sin_theta_0 = (float)Math.sin(theta_0);
-
-        float s0 = (float)Math.cos(theta) - dot * sin_theta / sin_theta_0;
-        float s1 = sin_theta / sin_theta_0;
-        return add(multiply(a,s0),multiply(b,s1));
-    }
-
 }
