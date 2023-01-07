@@ -40,6 +40,17 @@ public class GravityChangerMod implements ModInitializer {
             .entries((enabledFeatures, entries, operatorEnabled) -> {
                 entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_UP));
                 entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_DOWN));
+                entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_EAST));
+                entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_WEST));
+                entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_NORTH));
+                entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_SOUTH));
+                
+                entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_UP_AOE));
+                entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_DOWN_AOE));
+                entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_EAST_AOE));
+                entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_WEST_AOE));
+                entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_NORTH_AOE));
+                entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_SOUTH_AOE));
             })
             .build();
     }
