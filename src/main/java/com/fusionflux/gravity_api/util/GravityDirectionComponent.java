@@ -15,10 +15,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.shape.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,7 +67,7 @@ public class GravityDirectionComponent implements GravityComponent {
                 Vec3d realWorldVelocity = getRealWorldVelocity(entity, prevGravityDirection);
                 if (rotationParameters.rotateVelocity()) {
                     //Rotate velocity with gravity, this will cause things to appear to take a sharp turn
-                    Vec3f worldSpaceVec = new Vec3f(realWorldVelocity);
+                    Vector3f worldSpaceVec = realWorldVelocity.toVector3f();
                     worldSpaceVec.rotate(RotationUtil.getRotationBetween(prevGravityDirection, gravityDirection));
                     entity.setVelocity(RotationUtil.vecWorldToPlayer(new Vec3d(worldSpaceVec), gravityDirection));
                 } else {

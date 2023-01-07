@@ -11,7 +11,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Quaternion;
+import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -26,13 +26,13 @@ public abstract class EntityRenderMixin {
     //                ordinal = 0
     //        )
     //)
-    //private Quaternion redirect_renderLabelIfPresent_getRotation_0(EntityRenderDispatcher entityRenderDispatcher, Entity entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+    //private Quaternionf redirect_renderLabelIfPresent_getRotation_0(EntityRenderDispatcher entityRenderDispatcher, Entity entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
     //    Direction gravityDirection = GravityChangerAPI.getGravityDirection(entity);
     //    if(gravityDirection == Direction.DOWN) {
     //        return entityRenderDispatcher.getRotation();
     //    }
 ////
-    //    Quaternion quaternion = RotationUtil.getCameraRotationQuaternion(gravityDirection).copy();
+    //    Quaternionf Quaternionf = RotationUtil.getCameraRotationQuaternion(gravityDirection).copy();
     //    quaternion.conjugate();
     //    quaternion.hamiltonProduct(entityRenderDispatcher.getRotation().copy());
     //    return quaternion;
@@ -43,18 +43,18 @@ public abstract class EntityRenderMixin {
             method = "renderLabelIfPresent",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/entity/EntityRenderDispatcher;getRotation()Lnet/minecraft/util/math/Quaternion;",
+                    target = "Lnet/minecraft/client/render/entity/EntityRenderDispatcher;getRotation()Lorg/joml/Quaternionf;",
                     ordinal = 0
             )
     )
-    private Quaternion modifyExpressionValue_renderLabelIfPresent_getRotation_0(Quaternion originalRotation, Entity entity) {
+    private Quaternionf modifyExpressionValue_renderLabelIfPresent_getRotation_0(Quaternionf originalRotation, Entity entity) {
         Direction gravityDirection = GravityChangerAPI.getGravityDirection(entity);
         if(gravityDirection == Direction.DOWN) {
             return originalRotation;
         }
-        Quaternion quaternion = RotationUtil.getCameraRotationQuaternion(gravityDirection).copy();
+        Quaternionf quaternion = new Quaternionf(RotationUtil.getCameraRotationQuaternion(gravityDirection));
         quaternion.conjugate();
-        quaternion.hamiltonProduct(originalRotation);
+        quaternion.mul(originalRotation);
         return quaternion;
     }
 }
