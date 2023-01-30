@@ -1,7 +1,19 @@
 package com.fusionflux.gravity_api.mixin.client;
 
+import java.util.Optional;
+
 import com.fusionflux.gravity_api.RotationAnimation;
 import com.fusionflux.gravity_api.api.GravityChangerAPI;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Direction;
@@ -38,7 +50,7 @@ public abstract class CameraMixin {
         storedTickDelta = tickDelta;
     }
 
-    @Redirect(
+    @WrapOperation(
             method = "update",
             at = @At(
                     value = "INVOKE",
@@ -46,16 +58,16 @@ public abstract class CameraMixin {
                     ordinal = 0
             )
     )
-    private void redirect_update_setPos_0(Camera camera, double x, double y, double z, BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta) {
+    private void wrapOperation_update_setPos_0(Camera camera, double x, double y, double z, Operation<Void> original, BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta) {
         Direction gravityDirection = GravityChangerAPI.getGravityDirection(focusedEntity);;
         Optional<RotationAnimation> animationOptional = GravityChangerAPI.getGravityAnimation(focusedEntity);
         if(animationOptional.isEmpty()){
-            this.setPos(x, y, z);
+            original.call(this, x, y, z);
             return;
         }
         RotationAnimation animation = animationOptional.get();
         if (gravityDirection == Direction.DOWN && !animation.isInAnimation()) {
-            this.setPos(x, y, z);
+            original.call(this, x, y, z);
             return;
         }
         long timeMs = focusedEntity.world.getTime()*50+(long)(storedTickDelta*50);
@@ -71,10 +83,11 @@ public abstract class CameraMixin {
         Vector3f eyeOffset = new Vector3f(0, (float) currentCameraY, 0);
         eyeOffset.rotate(gravityRotation);
 
-        this.setPos(
-                entityX + eyeOffset.x(),
-                entityY + eyeOffset.y(),
-                entityZ + eyeOffset.z()
+        original.call(
+                this,
+                entityX + eyeOffset.getX(),
+                entityY + eyeOffset.getY(),
+                entityZ + eyeOffset.getZ()
         );
     }
 
