@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
 
-@Mixin(Camera.class)
+@Mixin(value = Camera.class, priority = 1001)
 public abstract class CameraMixin {
     @Shadow protected abstract void setPos(double x, double y, double z);
 
