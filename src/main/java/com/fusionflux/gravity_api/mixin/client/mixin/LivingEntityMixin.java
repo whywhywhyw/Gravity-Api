@@ -1,29 +1,23 @@
-package com.fusionflux.gravity_api.mixin;
+package com.fusionflux.gravity_api.mixin.client.mixin;
 
 
 import com.fusionflux.gravity_api.api.GravityChangerAPI;
 import com.fusionflux.gravity_api.util.RotationUtil;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -139,7 +133,7 @@ public abstract class LivingEntityMixin extends Entity {
             return blockPos;
         }
 
-        return BlockPos.ofFloored(this.getPos().add(RotationUtil.vecPlayerToWorld(0, -0.20000000298023224D, 0, gravityDirection)));
+        return new BlockPos(this.getPos().add(RotationUtil.vecPlayerToWorld(0, -0.20000000298023224D, 0, gravityDirection)));
     }
 
     @Redirect(
@@ -192,31 +186,31 @@ public abstract class LivingEntityMixin extends Entity {
         cir.setReturnValue(RotationUtil.boxPlayerToWorld(box, gravityDirection));
     }
 
-//    @Inject(
-//            method = "updateLimbs",
-//            at = @At("HEAD"),
-//            cancellable = true
-//    )
-//    private void inject_updateLimbs(LivingEntity entity, boolean flutter, CallbackInfo ci) {
-//        Direction gravityDirection = GravityChangerAPI.getGravityDirection(entity);
-//        if(gravityDirection == Direction.DOWN) return;
-//
-//        ci.cancel();
-//
-//        Vec3d playerPosDelta = RotationUtil.vecWorldToPlayer(entity.getX() - entity.prevX, entity.getY() - entity.prevY, entity.getZ() - entity.prevZ, gravityDirection);
-//
-//        entity.lastLimbDistance = entity.limbDistance;
-//        double d = playerPosDelta.x;
-//        double e = flutter ? playerPosDelta.y : 0.0D;
-//        double f = playerPosDelta.z;
-//        float g = (float)Math.sqrt(d * d + e * e + f * f) * 4.0F;
-//        if (g > 1.0F) {
-//            g = 1.0F;
-//        }
-//
-//        entity.limbDistance += (g - entity.limbDistance) * 0.4F;
-//        entity.limbAngle += entity.limbDistance;
-//    }
+    @Inject(
+            method = "updateLimbs",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private void inject_updateLimbs(LivingEntity entity, boolean flutter, CallbackInfo ci) {
+        Direction gravityDirection = GravityChangerAPI.getGravityDirection(entity);
+        if(gravityDirection == Direction.DOWN) return;
+
+        ci.cancel();
+
+        Vec3d playerPosDelta = RotationUtil.vecWorldToPlayer(entity.getX() - entity.prevX, entity.getY() - entity.prevY, entity.getZ() - entity.prevZ, gravityDirection);
+
+        entity.lastLimbDistance = entity.limbDistance;
+        double d = playerPosDelta.x;
+        double e = flutter ? playerPosDelta.y : 0.0D;
+        double f = playerPosDelta.z;
+        float g = (float)Math.sqrt(d * d + e * e + f * f) * 4.0F;
+        if (g > 1.0F) {
+            g = 1.0F;
+        }
+
+        entity.limbDistance += (g - entity.limbDistance) * 0.4F;
+        entity.limbAngle += entity.limbDistance;
+    }
 
     @WrapOperation(
             method = "tick",
@@ -404,22 +398,22 @@ public abstract class LivingEntityMixin extends Entity {
 
         return RotationUtil.vecWorldToPlayer(attacker.getEyePos(), gravityDirection).z;
     }
-    
+
     @Redirect(
-        method = "baseTick",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/util/math/BlockPos;ofFloored(DDD)Lnet/minecraft/util/math/BlockPos;",
-            ordinal = 0
-        )
+            method = "baseTick",
+            at = @At(
+                    value = "NEW",
+                    target = "net/minecraft/util/math/BlockPos",
+                    ordinal = 0
+            )
     )
     private BlockPos redirect_baseTick_new_0(double x, double y, double z) {
-        Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity) (Object) this);
-        if (gravityDirection == Direction.DOWN) {
-            return BlockPos.ofFloored(x, y, z);
+        Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity)(Object)this);
+        if(gravityDirection == Direction.DOWN) {
+            return new BlockPos(x, y, z);
         }
-        
-        return BlockPos.ofFloored(this.getEyePos());
+
+        return new BlockPos(this.getEyePos());
     }
 
     @WrapOperation(
@@ -546,15 +540,5 @@ public abstract class LivingEntityMixin extends Entity {
         }
 
         return RotationUtil.vecWorldToPlayer(vec3d, gravityDirection);
-    }
-
-    @ModifyConstant(method = "travel", constant = @Constant(doubleValue = 0.08))
-    private double multiplyGravity(double constant) {
-        return constant * GravityChangerAPI.getGravityStrength(this);
-    }
-
-    @ModifyVariable(method = "computeFallDamage", at = @At("HEAD"), ordinal = 0, argsOnly = true)
-    private float diminishFallDamage(float value) {
-        return value * (float)Math.sqrt(GravityChangerAPI.getGravityStrength(this));
     }
 }
