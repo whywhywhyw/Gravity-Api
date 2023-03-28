@@ -11,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import dev.onyxstudios.cca.api.v3.component.Component;
@@ -27,6 +28,9 @@ import net.minecraft.util.math.Vec3d;
 public abstract class GravityChangerAPI {
     public static final ComponentKey<GravityComponent> GRAVITY_COMPONENT =
             ComponentRegistry.getOrCreate(new Identifier("gravityapi", "gravity_direction"), GravityComponent.class);
+
+    public static final ComponentKey<GravityDimensionStrengthInterface> GRAVITY_DIMENSION_STRENGTH_COMPONENT =
+            ComponentRegistry.getOrCreate(new Identifier("gravityapi", "gravity_dimension_strength"), GravityDimensionStrengthInterface.class);
     
     // workaround for a CCA bug; maybeGet throws an NPE in internal code if the DataTracker isn't initialized
     // null check the component container to avoid it
@@ -92,6 +96,10 @@ public abstract class GravityChangerAPI {
             return maybeGetSafe(GRAVITY_COMPONENT, entity).map(GravityComponent::getGravityStrength).orElse(1d);
         }
         return 1d;
+    }
+
+    public static double getDimensionGravityStrength(World world) {
+        return maybeGetSafe(GRAVITY_DIMENSION_STRENGTH_COMPONENT, world).map(GravityDimensionStrengthInterface::getDimensionGravityStrength).orElse(1d);
     }
 
     public static Direction getActualGravityDirection(Entity entity) {
@@ -205,6 +213,11 @@ public abstract class GravityChangerAPI {
             }
         }
     }
+
+    public static void setDimensionGravityStrength(World world, double strength) {
+        maybeGetSafe(GRAVITY_DIMENSION_STRENGTH_COMPONENT, world).ifPresent(component -> component.setDimensionGravityStrength(strength));
+    }
+
     @Environment(EnvType.CLIENT)
     public static void setIsInvertedClient(ClientPlayerEntity entity, boolean isInverted, RotationParameters rotationParameters, Identifier verifier, PacketByteBuf verifierInfo) {
         if(onCorrectSide(entity, false)) {
