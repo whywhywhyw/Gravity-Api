@@ -37,7 +37,7 @@ public class GravityChangerMod implements ModInitializer {
     
         GravityChangerGroup = FabricItemGroup.builder(id("general"))
             .icon(() -> new ItemStack(ModItems.GRAVITY_CHANGER_UP))
-            .entries((enabledFeatures, entries, operatorEnabled) -> {
+            .entries((enabledFeatures, entries) -> {
                 entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_UP));
                 entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_DOWN));
                 entries.add(new ItemStack(ModItems.GRAVITY_CHANGER_EAST));

@@ -47,22 +47,22 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
         return RotationUtil.vecWorldToPlayer(playerEntity.getRotationVector(), gravityDirection);
     }
-
-
+    
+    
     @ModifyArgs(
-            method = "travel",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/util/math/BlockPos;<init>(DDD)V",
-                    ordinal = 0
-            )
+        method = "travel",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/util/math/BlockPos;ofFloored(DDD)Lnet/minecraft/util/math/BlockPos;",
+            ordinal = 0
+        )
     )
     private void modify_move_multiply_0(Args args) {
         Vec3d rotate = new Vec3d(0.0D, 1.0D - 0.1D, 0.0D);
-        rotate = RotationUtil.vecPlayerToWorld(rotate,GravityChangerAPI.getGravityDirection(this));
-        args.set(0,(double)args.get(0)-rotate.x);
-        args.set(1,(double)args.get(1)-rotate.y + (1.0D - 0.1D));
-        args.set(2,(double)args.get(2)-rotate.z);
+        rotate = RotationUtil.vecPlayerToWorld(rotate, GravityChangerAPI.getGravityDirection(this));
+        args.set(0, (double) args.get(0) - rotate.x);
+        args.set(1, (double) args.get(1) - rotate.y + (1.0D - 0.1D));
+        args.set(2, (double) args.get(2) - rotate.z);
     }
     //@Redirect(
     //        method = "travel",
@@ -133,7 +133,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
             double e = playerMovement.z;
             double var7 = 0.05D;
 
-            while(d != 0.0D && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(RotationUtil.vecPlayerToWorld(d, (double)(-this.stepHeight), 0.0D, gravityDirection)))) {
+            while(d != 0.0D && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(RotationUtil.vecPlayerToWorld(d, (double)(-this.getStepHeight()), 0.0D, gravityDirection)))) {
                 if (d < 0.05D && d >= -0.05D) {
                     d = 0.0D;
                 } else if (d > 0.0D) {
@@ -143,7 +143,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
                 }
             }
 
-            while(e != 0.0D && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(RotationUtil.vecPlayerToWorld(0.0D, (double)(-this.stepHeight), e, gravityDirection)))) {
+            while(e != 0.0D && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(RotationUtil.vecPlayerToWorld(0.0D, (double)(-this.getStepHeight()), e, gravityDirection)))) {
                 if (e < 0.05D && e >= -0.05D) {
                     e = 0.0D;
                 } else if (e > 0.0D) {
@@ -153,7 +153,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
                 }
             }
 
-            while(d != 0.0D && e != 0.0D && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(RotationUtil.vecPlayerToWorld(d, (double)(-this.stepHeight), e, gravityDirection)))) {
+            while(d != 0.0D && e != 0.0D && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(RotationUtil.vecPlayerToWorld(d, (double)(-this.getStepHeight()), e, gravityDirection)))) {
                 if (d < 0.05D && d >= -0.05D) {
                     d = 0.0D;
                 } else if (d > 0.0D) {

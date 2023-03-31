@@ -17,7 +17,7 @@ public abstract class RotationUtil {
             for(Direction direction : Direction.values()) {
                 Vec3d directionVector = Vec3d.of(direction.getVector());
                 directionVector = RotationUtil.vecWorldToPlayer(directionVector, gravityDirection);
-                DIR_WORLD_TO_PLAYER[gravityDirection.getId()][direction.getId()] = Direction.fromVector(new BlockPos(directionVector));
+                DIR_WORLD_TO_PLAYER[gravityDirection.getId()][direction.getId()] = Direction.fromVector(BlockPos.ofFloored(directionVector));
             }
         }
     }
@@ -33,7 +33,7 @@ public abstract class RotationUtil {
             for(Direction direction : Direction.values()) {
                 Vec3d directionVector = Vec3d.of(direction.getVector());
                 directionVector = RotationUtil.vecPlayerToWorld(directionVector, gravityDirection);
-                DIR_PLAYER_TO_WORLD[gravityDirection.getId()][direction.getId()] = Direction.fromVector(new BlockPos(directionVector));
+                DIR_PLAYER_TO_WORLD[gravityDirection.getId()][direction.getId()] = Direction.fromVector(BlockPos.ofFloored(directionVector));
             }
         }
     }

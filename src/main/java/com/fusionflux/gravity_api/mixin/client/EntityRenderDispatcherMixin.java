@@ -115,7 +115,7 @@ public abstract class EntityRenderDispatcherMixin {
         MatrixStack.Entry entry = matrices.peek();
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(SHADOW_LAYER);
 
-        for(BlockPos blockPos : BlockPos.iterate(new BlockPos(minShadowPos), new BlockPos(maxShadowPos))) {
+        for(BlockPos blockPos : BlockPos.iterate(BlockPos.ofFloored(minShadowPos), BlockPos.ofFloored(maxShadowPos))) {
             gravitychanger$renderShadowPartPlayer(entry, vertexConsumer, world, blockPos, x, y, z, radius, opacity, gravityDirection);
         }
     }

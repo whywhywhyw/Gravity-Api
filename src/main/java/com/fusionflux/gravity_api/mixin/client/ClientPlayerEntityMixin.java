@@ -64,7 +64,7 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
         ci.cancel();
 
         Vec3d pos = RotationUtil.vecPlayerToWorld(x - this.getX(), 0.0D, z - this.getZ(), gravityDirection).add(this.getPos());
-        BlockPos blockPos = new BlockPos(pos);
+        BlockPos blockPos = BlockPos.ofFloored(pos);
         if (this.wouldCollideAt(blockPos)) {
             double dx = pos.x - (double)blockPos.getX();
             double dy = pos.y - (double)blockPos.getY();
