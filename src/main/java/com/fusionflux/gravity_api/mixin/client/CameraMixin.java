@@ -85,9 +85,9 @@ public abstract class CameraMixin {
 
         original.call(
                 this,
-                entityX + eyeOffset.getX(),
-                entityY + eyeOffset.getY(),
-                entityZ + eyeOffset.getZ()
+                entityX + eyeOffset.x(),
+                entityY + eyeOffset.y(),
+                entityZ + eyeOffset.z()
         );
     }
 
